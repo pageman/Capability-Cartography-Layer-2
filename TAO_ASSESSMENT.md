@@ -1,174 +1,229 @@
-# Tao Assessment
+# Tao Assessment for Capability Cartography Layer 2
 
-## Question
+## Scope
 
-Terence Tao’s framing is that the mechanics of modern language models are not especially mysterious, but their behavior still is. We know how to build them. We do not yet know how to predict, in a principled way, when they will succeed, fail, generalize, or collapse.
-
-This repository should therefore be judged not by whether it explains transformers in the abstract, but by whether it turns that behavioral mystery into something more measurable, predictive, and falsifiable.
-
-## What Was Re-Run
-
-The current assessment is based on re-running the latest repository in linked mode against the local companion repositories:
+This assessment is specific to the current run state of `Capability-Cartography-Layer-2`. It is not a generic statement about the design goals of the repository. It is a judgment based on the current generated artifacts after re-running the repository locally in linked mode against:
 
 - `pageman/Sutskever-30-implementations`
 - `pageman/Sutskever-Agent`
 - `pageman/gpt1-from-Sutskever30`
 
-The relevant outputs are:
+The point of the assessment is to answer a narrow question:
 
-- [`artifacts/capability-cartography-demo.json`](./artifacts/capability-cartography-demo.json)
-- [`artifacts/gpt1-wind-tunnel.json`](./artifacts/gpt1-wind-tunnel.json)
-- [`artifacts/sweeps/sweep_summary.json`](./artifacts/sweeps/sweep_summary.json)
-- [`artifacts/measured/measured_summary.json`](./artifacts/measured/measured_summary.json)
-- [`artifacts/measured/measured_records.csv`](./artifacts/measured/measured_records.csv)
-- [`artifacts/measured/measured_laws.json`](./artifacts/measured/measured_laws.json)
+Does this repository, as it runs today, meaningfully answer Terence Tao’s framing of the modern AI puzzle, or does it only restate that puzzle in better software form?
 
-## What The Current Results Show
+## Tao’s Framing
 
-The repository now produces more than demo plots or qualitative summaries. It produces:
+Tao’s observation is that the basic mathematics of LLM construction is not terribly exotic. The mystery is not how matrix multiplication works. The mystery is why models display competence on some tasks, collapse on others, and do so in ways we still struggle to predict before the fact.
 
-- measured tiny-run experiments using the linked GPT-1 implementation
-- repeated-seed records
-- differentiated task families
-- holdout validation
-- bootstrap coefficient intervals
-- machine-readable law statements
-- provenance back to the three linked repositories
+So the standard here is not:
+
+- does this repo explain transformers?
+
+The real standard is:
+
+- does this repo convert behavioral mystery into predictive, falsifiable, measurable structure?
+
+## What Was Re-Run
+
+The latest assessment is based on re-running:
+
+- `python3 -m unittest discover -s tests -p 'test_*.py'`
+- `python3 -m capability_cartography.demo`
+
+Latest rerun status:
+
+- tests: `10/10` passing
+- demo: completed successfully
+
+The artifacts used for this assessment are:
+
+- [`artifacts/layer2/measured/measured_summary.json`](./artifacts/layer2/measured/measured_summary.json)
+- [`artifacts/layer2/measured/measured_records.csv`](./artifacts/layer2/measured/measured_records.csv)
+- [`artifacts/layer2/failure_atlas/failure_atlas.json`](./artifacts/layer2/failure_atlas/failure_atlas.json)
+- [`artifacts/layer2/notebooks/22_scaling_laws.execution.json`](./artifacts/layer2/notebooks/22_scaling_laws.execution.json)
+- [`artifacts/layer2/sweeps/sweep_summary.json`](./artifacts/layer2/sweeps/sweep_summary.json)
+
+## What The Current Layer 2 Results Actually Show
+
+### 1. It produces a real local predictive law
 
 The current measured-law output reports:
 
 - `record_count = 32`
 - `train_count = 16`
 - `holdout_count = 16`
-- fitted model `R^2 ≈ 0.9787`
-- holdout `MAE ≈ 0.0019`
-- holdout `R^2 ≈ 0.9647`
+- model fit `R^2 ≈ 0.9771`
+- holdout `MAE ≈ 0.0021`
+- holdout `R^2 ≈ 0.9264`
 
-The fitted empirical law in the current regime is:
+The current fitted law is:
 
-`capability_score = 0.220481 + 0.000066*scale + 0.000000*data_tokens + 0.003895*task_family_code - 0.032977*retrieval_dependence`
+`capability_score = 0.222348 + 0.000014*scale + 0.000000*data_tokens + 0.005762*task_family_code - 0.037462*retrieval_dependence`
 
-The current bootstrap intervals support three immediate observations:
+The repository also exports that law in a falsifiable form:
 
-- `scale` has a positive effect in the measured regime
-- `task_family_code` has a positive effect in the measured regime
-- `retrieval_dependence` has a reliably negative effect in the measured regime
+`Within the measured regime, capability_score = 0.222348 + 0.000014*scale + 0.000000*data_tokens + 0.005762*task_family_code + -0.037462*retrieval_dependence. This law is supported only if holdout MAE remains <= 0.0021 and holdout R^2 remains >= 0.9264 on new runs from the same regime.`
 
-By task family, the current mean capability scores are approximately:
+That matters because the repository is no longer saying only:
 
-- `retrieval_qa ≈ 0.203`
-- `object_tracking ≈ 0.224`
-- `pair_matching ≈ 0.230`
-- `babi_simple ≈ 0.231`
+- performance changed
+- a capability seemed to emerge
+- one setup looked brittle
 
-That means the code is no longer merely asserting that “tasks differ.” It is measuring differences and validating a predictive relation across them.
+It is instead stating:
 
-## How This Answers Tao’s Framing
+- what variables were measured
+- what the fitted relation is
+- how well it held on a holdout split
+- what numerical thresholds would count as continued support
 
-### What It Now Answers
+That is a serious improvement over pure benchmark folklore.
 
-The repository now answers Tao’s challenge in a real but limited way.
+### 2. Task-family differentiation is real in the current run
 
-It shows that the mystery of model behavior can be converted into a predictive measurement problem. Instead of only saying:
+The current task-family means from [`measured_records.csv`](./artifacts/layer2/measured/measured_records.csv) are:
 
-- models are surprisingly strong here
-- brittle there
-- emergent at some unclear point
+- `retrieval_qa ≈ 0.2029`
+- `object_tracking ≈ 0.2229`
+- `pair_matching ≈ 0.2286`
+- `babi_simple ≈ 0.2320`
 
-the repository now produces:
+This means the current Layer 2 run does not just pretend that task family matters. It measures a stable gap between task families in the current regime, with `retrieval_qa` as the hardest family in this setup.
 
-- measured capability trajectories
-- phase summaries
-- task-family-conditioned differences
-- holdout-tested predictive laws
+That is directly relevant to Tao’s concern that models are strong on some tasks and weak on others without sufficiently predictive principles. The code now gives at least one local principle:
+
+- retrieval-heavy task structure is associated with lower measured capability in this regime
+
+### 3. Failure modes are now exported explicitly
+
+The current failure-atlas artifact reports:
+
+- `record_count = 32`
+- `label_counts = {"collapse": 8, "stable_reasoning": 24}`
+
+The artifact also contains per-record:
+
+- `actual_label`
+- `predicted_label`
+- centroid-distance diagnostics
+
+This is important because the previous weak version of Layer 2 could gesture at failure geometry without exporting enough structure to inspect it properly. The current run is better. It now produces an explicit, inspectable failure-atlas artifact rather than only abstract classifier scaffolding.
+
+The current failure atlas is still simple. It is centroid-based, not state-of-the-art, and the label taxonomy is still small. But the artifact is now real.
+
+### 4. Direct substrate notebook execution is now stable enough to count
+
+The current notebook execution report for [`22_scaling_laws.execution.json`](./artifacts/layer2/notebooks/22_scaling_laws.execution.json) shows:
+
+- `returncode = 0`
+- `stderr = ""`
+- `generated_figures = 5`
+
+This matters because the earlier state of Layer 2 had a credibility problem: it claimed richer notebook wrapping while the direct execution path was unstable. That is no longer true for the current checked notebook.
+
+This does not mean notebook execution is universally solved across the whole substrate. It does mean the specific path being used in the Layer 2 orchestration is no longer crashing, and the repo now exports a concrete substrate execution report with generated figures.
+
+### 5. The sweep layer still gives threshold-style summaries
+
+The current sweep output reports:
+
+- `record_count = 36`
+- `surface_fit R^2 ≈ 0.9730`
+- onset threshold by `scale = 32`
+- onset threshold by `data_tokens = 32768`
+
+These sweep results are still more synthetic than the measured-law path, so they should be interpreted more cautiously. But they still contribute to the central cartography goal:
+
+- replacing vague “emergence” language with thresholds and onset surfaces
+
+## What These Results Mean Relative to Tao’s Question
+
+### What Layer 2 now answers
+
+Layer 2 now gives a meaningful answer to part of Tao’s puzzle.
+
+It shows that model behavior can be transformed from:
+
+- vague emergence stories
+- benchmark anecdotes
+- post hoc narratives
+
+into:
+
+- measured records
+- held-out predictive laws
 - uncertainty intervals
+- explicit failure categories
+- notebook-backed substrate artifacts
 
-That is a meaningful step beyond pure benchmark folklore.
+That is not a trivial improvement. It means the repo is no longer merely architectural. It is now empirically productive.
 
-It also gives a concrete answer to one part of Tao’s puzzle:
+In particular, it now supports these narrower claims:
 
-we may not yet possess a deep general theory of model behavior, but we can begin to state and test falsifiable local laws of the form:
+- behavior differences across task families can be measured rather than hand-waved
+- retrieval-heavy settings are harder in the current regime
+- some local predictive laws can be stated and tested on holdout data
+- failure modes can be exported in explicit machine-readable form
+- substrate notebook execution can feed the cartography story rather than sit beside it as dead pedagogy
 
-- capability increases with some scale variables
-- retrieval-heavy settings are harder
-- task geometry matters
-- these effects can be validated on held-out runs
+### What Layer 2 still does not answer
 
-That is closer to science than “we scaled it and something emerged.”
-
-### What It Still Does Not Answer
-
-This repository does **not** yet solve the central puzzle in a broad or final sense.
+The current run still does **not** solve Tao’s puzzle in the broad sense.
 
 It does not yet provide:
 
-- a universal theory of language-model capability
-- a general account of the “middle regime” between randomness and order
-- predictive laws that are known to transfer to large frontier systems
-- a mathematically deep explanation of why these laws hold
+- a general theory of LLM capability
+- a theory of the language “middle regime” between randomness and order
+- laws known to transfer from this small regime to large frontier models
+- a causal explanation of why the measured coefficients take the values they do
 
-Its current laws are local, empirical, and regime-bound.
+There are also specific reasons for caution:
 
-In particular:
+- the measured regime is still small
+- the tasks are still semi-synthetic
+- `data_tokens` remains effectively weak in the current law
+- the `scale` coefficient is positive, but its bootstrap interval still crosses zero
+- the failure atlas is explicit, but still simple and hand-labeled
 
-- the measured runs are still small
-- the task families are still semi-synthetic
-- the current law should be interpreted as valid only inside the tested regime
-- the coefficient on `data_tokens` is currently weak, which suggests the regime is too narrow to support large claims about scale-data tradeoffs
+So the correct reading is not:
 
-So this is not yet a general science of LLM behavior. It is a serious prototype of one.
+- the mystery is solved
 
-## Best Current Interpretation
+The correct reading is:
 
-The most defensible reading is:
+- the mystery has been narrowed into a more disciplined empirical problem
 
-1. The repository now meaningfully addresses Tao’s puzzle at the level of method.
-2. It demonstrates that capability behavior can be studied through measured, held-out, uncertainty-aware laws rather than only anecdotes.
-3. It still does not justify strong claims about general LLM behavior outside the measured regime.
+## The Strongest Defensible Interpretation
 
-In short:
+The strongest defensible claim is this:
 
-- before, the repo mainly organized the question
-- now, it produces a real local predictive answer
-- but that answer is still narrow rather than universal
+Capability Cartography Layer 2 now provides a real local empirical response to Tao’s puzzle. It does not merely say that behavior is mysterious. It fits and validates a predictive relation, exports explicit failure structure, and successfully executes a linked substrate notebook as part of the artifact set.
 
-## Why This Matters
+But the correct qualifier is just as important:
 
-This distinction matters because the field often oscillates between two bad extremes:
+the response is local, not universal.
 
-- overstating mystery
-- overstating understanding
+That means:
 
-Tao’s framing is useful because it forces a harder standard. The correct question is not whether we understand linear algebra. We do. The correct question is whether we can turn behavior into a predictive, falsifiable empirical science.
-
-This repository is no longer at zero on that question.
-
-It now has:
-
-- measured runs
-- repeated seeds
-- holdout validation
-- uncertainty intervals
-- provenance
-- differentiated task families
-- exported law statements
-
-That is enough to say the project has crossed from “well-instrumented demo” into “early scientific instrument.”
-
-It is not enough to say the puzzle is solved.
+- yes, this is now an early scientific instrument rather than just a demo repo
+- no, it is not yet a general science of large language model capability
 
 ## Bottom Line
 
-If the standard is:
+If the question is:
 
-“Does this repo fully explain the unpredictable capabilities of large language models?”
+“Does the current Layer 2 run fully explain why LLMs behave so unevenly across tasks?”
 
 the answer is no.
 
-If the standard is:
+If the question is:
 
-“Does this repo now provide a serious, reader-inspectable, empirically grounded framework for turning that puzzle into falsifiable predictive claims?”
+“Does the current Layer 2 run turn part of that mystery into a measurable, falsifiable, inspectable empirical program?”
 
 the answer is yes.
 
-That is the right claim to make, and no stronger one.
+That is the right interpretation of the current results, and it is stronger than the previous state of the repo because the two weakest pieces are no longer weak:
+
+- failure-atlas output is now explicit and populated
+- direct substrate notebook execution is now stable for the current checked path

@@ -25,6 +25,129 @@ If you want the main second-generation additions, focus on these modules:
 - `capability_cartography/agent_integration.py`
 - `capability_cartography/compressibility.py` for live-weight estimators
 
+## Current Results and Tao Assessment
+
+If you want the full, run-specific interpretation of the latest Layer 2 outputs, read [`TAO_ASSESSMENT.md`](./TAO_ASSESSMENT.md). That file is the best reader-oriented answer to the question:
+
+- after the latest rerun, how much does this repository actually explain about the gap between simple model mechanics and hard-to-predict model behavior?
+
+The short version is that Layer 2 now answers that question better than the earlier repository, but still only within a narrow measured regime.
+
+### What was just re-run
+
+The current assessment is based on a fresh rerun of:
+
+- `python3 -m unittest discover -s tests -p 'test_*.py'`
+- `python3 -m capability_cartography.demo`
+
+Current rerun status:
+
+- tests: `10/10` passing
+- demo: completed successfully
+
+### Which artifacts matter most
+
+If you only inspect a handful of outputs, inspect these:
+
+- [`artifacts/layer2/measured/measured_summary.json`](./artifacts/layer2/measured/measured_summary.json)
+- [`artifacts/layer2/measured/measured_records.csv`](./artifacts/layer2/measured/measured_records.csv)
+- [`artifacts/layer2/failure_atlas/failure_atlas.json`](./artifacts/layer2/failure_atlas/failure_atlas.json)
+- [`artifacts/layer2/notebooks/22_scaling_laws.execution.json`](./artifacts/layer2/notebooks/22_scaling_laws.execution.json)
+- [`artifacts/layer2/sweeps/sweep_summary.json`](./artifacts/layer2/sweeps/sweep_summary.json)
+
+These are the files that support the core claim that the repository is doing more than generating nice plots or abstract architecture diagrams.
+
+### What the latest measured-law results say
+
+The current measured-law run reports:
+
+- `record_count = 32`
+- `train_count = 16`
+- `holdout_count = 16`
+- model fit `R^2 ≈ 0.9771`
+- holdout `MAE ≈ 0.0021`
+- holdout `R^2 ≈ 0.9264`
+
+The current local fitted law is:
+
+`capability_score = 0.222348 + 0.000014*scale + 0.000000*data_tokens + 0.005762*task_family_code - 0.037462*retrieval_dependence`
+
+That law is intentionally exported in falsifiable form. The artifact does not merely present coefficients. It also states the conditions under which the law should still be considered supported:
+
+- holdout `MAE` should remain at or below roughly `0.0021`
+- holdout `R^2` should remain at or above roughly `0.9264`
+- the claim applies only inside the measured regime represented by the run
+
+That is important. It means the repo is trying to behave more like an empirical instrument than a storytelling device.
+
+### What the latest task-family split says
+
+The current task-family means are:
+
+- `retrieval_qa ≈ 0.2029`
+- `object_tracking ≈ 0.2229`
+- `pair_matching ≈ 0.2286`
+- `babi_simple ≈ 0.2320`
+
+This matters because it gives a concrete, current-run answer to one of the central concerns in Tao’s framing:
+
+- models are not just “weirdly uneven” in the abstract
+- they are measurably uneven across task families
+- in this regime, retrieval-heavy work is the weakest family
+
+That does not solve the general puzzle, but it does replace hand-waving with a measured pattern.
+
+### What the latest failure-atlas result says
+
+The failure-atlas artifact is now populated and explicit. The latest run reports:
+
+- `record_count = 32`
+- `collapse = 8`
+- `stable_reasoning = 24`
+
+It also stores per-record:
+
+- actual label
+- predicted label
+- centroid-distance diagnostics
+
+This is a meaningful improvement over the weaker earlier state where failure-atlas support existed mostly as code scaffolding. The current repository now exports an inspectable failure artifact rather than only promising one.
+
+### What the substrate notebook execution result says
+
+The latest direct execution wrapper result for the linked scaling-laws notebook reports:
+
+- `returncode = 0`
+- empty `stderr`
+- `5` generated figures
+
+That matters because one of the previous weak points of Layer 2 was that richer notebook wrapping existed in concept but not as a stable execution path. The current run is better: the notebook wrapper now produces an actual execution report and saved figures rather than failing during headless execution.
+
+### What this does and does not establish
+
+What it does establish:
+
+- the repo can now produce a real local predictive law
+- the repo can validate that law on holdout data
+- the repo can export explicit failure structure
+- the repo can connect that interpretation back to a real linked substrate notebook
+
+What it does not establish:
+
+- a general theory of frontier LLM behavior
+- a deep theory of the language “middle regime”
+- globally transferable scaling laws across model families and data regimes
+
+So the right claim is not:
+
+- this repository solves the mystery of language-model behavior
+
+The right claim is:
+
+- this repository now turns part of that mystery into a measurable, falsifiable, inspectable empirical program
+
+That distinction is the entire point of [`TAO_ASSESSMENT.md`](./TAO_ASSESSMENT.md). Read that file if you want the full interpretation in plain language rather than only the raw JSON outputs.
+
 ## Why This Repository Exists
 
 Most open educational model repositories are optimized for understanding how a model is built. That is useful, but incomplete. The deeper scientific question is not merely how a mechanism is implemented, but under what conditions a capability appears, stabilizes, degrades, or collapses.
