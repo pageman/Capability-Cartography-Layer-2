@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import csv
 import json
+from collections import Counter
 from pathlib import Path
 from typing import Dict, List, Sequence
 
@@ -27,10 +28,32 @@ class FailureAtlasClassifier:
             for label, vectors in by_label.items()
             if vectors
         }
+        predictions = []
+        label_counts = Counter()
+        for record, label in labeled:
+            prediction = self.predict(record)
+            label_counts[label] += 1
+            predictions.append(
+                {
+                    "experiment_id": record.get("experiment_id", ""),
+                    "task_family": record.get("task_family", ""),
+                    "actual_label": label,
+                    "predicted_label": prediction["label"],
+                    "distances": prediction["distances"],
+                    "capability_score": float(record.get("capability_score", 0.0)),
+                    "generalization_gap": float(record.get("generalization_gap", 0.0)),
+                    "retrieval_dependence": float(record.get("retrieval_dependence", 0.0)),
+                    "scale": float(record.get("scale", 0.0)),
+                    "data_tokens": float(record.get("data_tokens", 0.0)),
+                }
+            )
         return {
             "labels": sorted(by_label.keys()),
+            "label_counts": dict(sorted(label_counts.items())),
+            "record_count": len(records),
             "feature_keys": list(self.feature_keys),
             "centroids": {label: centroid.tolist() for label, centroid in self.centroids.items()},
+            "records": predictions,
         }
 
     def predict(self, record: Dict[str, float]) -> Dict[str, object]:

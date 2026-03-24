@@ -164,6 +164,8 @@ class CapabilityCartographyTests(unittest.TestCase):
         )
         prediction = classifier.predict({"capability_score": 0.18, "generalization_gap": 0.06, "retrieval_dependence": 1.0, "task_family_code": 3.0, "scale": 32.0, "data_tokens": 1024.0})
         self.assertIn("collapse", summary["labels"])
+        self.assertIn("label_counts", summary)
+        self.assertEqual(summary["record_count"], 2)
         self.assertIn("label", prediction)
 
     def test_notebook_wrapper_exports_script(self):
@@ -172,6 +174,14 @@ class CapabilityCartographyTests(unittest.TestCase):
         with TemporaryDirectory() as temp_dir:
             path = wrapper.export_notebook_script("22_scaling_laws", output_dir=temp_dir)
             self.assertTrue(Path(path).exists())
+
+    def test_notebook_wrapper_executes_scaling_notebook(self):
+        substrate = NotebookSubstrateAdapter("/Users/hifi/sutskever-30-implementations")
+        wrapper = NotebookExecutionWrapper(substrate)
+        with TemporaryDirectory() as temp_dir:
+            report = wrapper.execute_notebook("22_scaling_laws", output_dir=temp_dir, timeout_seconds=120)
+            self.assertEqual(report["returncode"], 0)
+            self.assertGreaterEqual(len(report["generated_figures"]), 1)
 
 
 if __name__ == "__main__":
