@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "capability-cartography-layer-2"
+version = "0.2.0"
+description = "A second-generation capability cartography framework with orchestration, failure atlases, visualization, notebook execution, agent workflow integration, and live-weight compressibility."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+  { name = "Paul \"The Pageman\" Pajo" }
+]
+dependencies = [
+  "matplotlib",
+  "numpy",
+  "PyYAML"
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
