@@ -1,6 +1,6 @@
 # Capability Cartography Layer 2
 
-**Capability Cartography Layer 2** extends the first repository with fuller orchestration, explicit failure-atlas modeling, static visualization, direct notebook execution wrappers, stronger Sutskever-Agent workflow integration, and richer compressibility estimators from live model weights.
+**Capability Cartography Layer 2** is the direct successor to `Capability-Cartography-Layer`. It keeps the original cartography spine, but extends it with fuller orchestration, explicit failure-atlas modeling, static visualization, direct notebook execution wrappers, stronger Sutskever-Agent workflow integration, and richer compressibility estimators from live model weights.
 
 This repository is designed to sit on top of three companion resources:
 
@@ -10,7 +10,7 @@ This repository is designed to sit on top of three companion resources:
 
 These links are preserved explicitly in code and artifacts. The adapter layer records canonical repository URLs and configured local roots so every cartography export can retain its provenance back to those three repos rather than treating them as anonymous backends.
 
-The central claim of this project is simple: benchmark folklore is not enough. If a model is “surprisingly strong,” “brittle,” “emergent,” or “lost in the middle,” those labels should resolve into measurable regions, descriptor profiles, compressibility signatures, and threshold estimates. This repo exists to provide the scaffolding for exactly that.
+The central claim of this project is simple: benchmark folklore is not enough. If a model is “surprisingly strong,” “brittle,” “emergent,” or “lost in the middle,” those labels should resolve into measurable regions, descriptor profiles, compressibility signatures, and threshold estimates. This successor repo exists to push that program further than the first repository did.
 
 ## Reader Guide
 
@@ -282,6 +282,33 @@ The main Python package.
 - [`capability_cartography/metrics.py`](./capability_cartography/metrics.py)
   Computes aggregate metrics, calibration-style error, and capability proxies for measured synthetic trajectories.
 
+- [`capability_cartography/execution.py`](./capability_cartography/execution.py)
+  Runs measured tiny-model experiments against the linked GPT-1 wind tunnel and exports live-run signals including weight-oriented compressibility summaries.
+
+- [`capability_cartography/datasets.py`](./capability_cartography/datasets.py)
+  Defines the small measured task families used for local predictive-law studies and task-family differentiation.
+
+- [`capability_cartography/validation.py`](./capability_cartography/validation.py)
+  Fits local predictive laws, performs holdout validation, and computes bootstrap coefficient intervals.
+
+- [`capability_cartography/provenance.py`](./capability_cartography/provenance.py)
+  Captures repository commit, branch, dirty-state, and local-root provenance for linked companion repositories.
+
+- [`capability_cartography/orchestration.py`](./capability_cartography/orchestration.py)
+  Coordinates the Layer 2 study stack across measured runs, sweep exports, failure-atlas generation, notebook execution, plotting, and agent-bundle export.
+
+- [`capability_cartography/failure_atlas.py`](./capability_cartography/failure_atlas.py)
+  Trains and exports the current explicit failure-atlas artifact, including label counts and per-record predictions.
+
+- [`capability_cartography/visualization.py`](./capability_cartography/visualization.py)
+  Generates static onset-surface and phase-region plots from exported records.
+
+- [`capability_cartography/notebook_runner.py`](./capability_cartography/notebook_runner.py)
+  Wraps linked substrate notebooks into executable Python scripts, runs them in headless mode, and captures reports plus generated figures.
+
+- [`capability_cartography/agent_integration.py`](./capability_cartography/agent_integration.py)
+  Produces Sutskever-Agent-oriented briefs and workflow bundles from the exported Layer 2 study outputs.
+
 ### `tests/`
 
 Basic unit tests using the Python standard library’s `unittest` module.
@@ -307,17 +334,20 @@ In practical terms:
 ### Minimal installation
 
 ```bash
-git clone https://github.com/pageman/Capability-Cartography-Layer
-cd Capability-Cartography-Layer
+git clone https://github.com/pageman/Capability-Cartography-Layer-2
+cd Capability-Cartography-Layer-2
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e .
 ```
 
-This installs the package itself with its lightweight dependencies:
+This installs the package itself with its currently declared dependencies:
 
+- `matplotlib`
 - `numpy`
 - `PyYAML`
+
+If you want to execute linked substrate notebooks directly, you may also need notebook-specific scientific Python dependencies used by those notebooks. For the currently exercised `22_scaling_laws` path, that includes `scipy`.
 
 ### Optional companion repositories
 
@@ -365,13 +395,14 @@ This will:
 9. export sweep records and surface summaries to `./artifacts/sweeps/`
 10. run a measured study using actual tiny GPT-1 training loops on task families derived from the linked substrate
 11. export held-out validation, bootstrap intervals, and falsifiable law statements to `./artifacts/measured/`
+12. run the Layer 2 orchestration stack and export failure-atlas, plot, notebook, and agent-workflow outputs to `./artifacts/layer2/`
 
 ## Linked Mode
 
 If the companion repositories already exist in standard local locations, this is enough:
 
 ```bash
-cd Capability-Cartography-Layer
+cd Capability-Cartography-Layer-2
 python3 -m capability_cartography.demo
 ```
 
@@ -418,6 +449,56 @@ The measured study outputs also contain:
 - bootstrap coefficient intervals
 - provenance with linked repository commits
 - falsifiable law statements with explicit validation error
+
+## Layer 2 Artifact Tree
+
+The current Layer 2 orchestration exports a second-generation artifact bundle under [`artifacts/layer2/`](./artifacts/layer2/). At the time of writing, the exact current tree includes:
+
+```text
+artifacts/layer2/
+├── agent/
+│   ├── agent_brief.json
+│   └── agent_workflow.yaml
+├── failure_atlas/
+│   └── failure_atlas.json
+├── measured/
+│   ├── measured_laws.json
+│   ├── measured_records.csv
+│   └── measured_summary.json
+├── notebooks/
+│   ├── 22_scaling_laws.execution.json
+│   ├── 22_scaling_laws.py
+│   └── 22_scaling_laws_figures/
+│       ├── figure_01.png
+│       ├── figure_02.png
+│       ├── figure_03.png
+│       ├── figure_04.png
+│       └── figure_05.png
+├── plots/
+│   ├── onset_surface.png
+│   └── phase_regions.png
+└── sweeps/
+    ├── sweep_records.csv
+    ├── sweep_records.jsonl
+    └── sweep_summary.json
+```
+
+The most important Layer 2 outputs are:
+
+- [`artifacts/layer2/measured/measured_summary.json`](./artifacts/layer2/measured/measured_summary.json)
+  The current local predictive-law summary with train/holdout split metrics and bootstrap intervals.
+- [`artifacts/layer2/measured/measured_records.csv`](./artifacts/layer2/measured/measured_records.csv)
+  The measured run table used for current local-law fitting and task-family analysis.
+- [`artifacts/layer2/failure_atlas/failure_atlas.json`](./artifacts/layer2/failure_atlas/failure_atlas.json)
+  The exported failure-atlas artifact with label counts, centroids, and per-record predictions.
+- [`artifacts/layer2/notebooks/22_scaling_laws.execution.json`](./artifacts/layer2/notebooks/22_scaling_laws.execution.json)
+  The linked substrate notebook execution report, including runtime status and generated figures.
+- [`artifacts/layer2/plots/onset_surface.png`](./artifacts/layer2/plots/onset_surface.png)
+  The current static onset-surface visualization.
+- [`artifacts/layer2/plots/phase_regions.png`](./artifacts/layer2/plots/phase_regions.png)
+  The current static phase-region visualization.
+- [`artifacts/layer2/agent/agent_workflow.yaml`](./artifacts/layer2/agent/agent_workflow.yaml)
+  The exported Sutskever-Agent workflow bundle for the current orchestration result.
 
 ## Configuration Model
 
@@ -473,6 +554,11 @@ At the current version, the repository provides:
 - held-out predictive validation and bootstrap uncertainty intervals
 - provenance capture with companion-repo commits and dirty state
 - falsifiable law statements exported as machine-readable artifacts
+- full Layer 2 orchestration over measured studies, sweeps, plotting, notebook execution, and agent export
+- explicit failure-atlas exports with label counts and per-record predictions
+- static onset-surface and phase-region visualizations
+- direct linked notebook execution with saved figure capture
+- Sutskever-Agent workflow bundle export
 - JSON artifact export
 - a runnable demo
 - basic tests
@@ -485,11 +571,11 @@ Important limitations:
 
 - boundary fitting is intentionally lightweight and heuristic
 - the descriptor schema currently uses proxies rather than fully learned latent estimators
-- notebook execution wrapping is metadata-oriented today rather than full notebook runtime orchestration
-- the GPT-1 integration currently emphasizes probing and instrumentation rather than large-scale sweep automation
-- plotting and interactive atlas visualization are not yet included in this standalone repo
+- the current failure atlas is still simple and centroid-based rather than a strong probabilistic classifier
+- notebook execution is now working for the current linked path, but it is not yet a comprehensive, notebook-by-notebook execution framework across the whole substrate
+- the GPT-1 integration currently emphasizes small measured studies and instrumentation rather than large-scale sweep automation
+- visualization is currently static rather than interactive
 - the current response-surface fitting is still lightweight and should be replaced by stronger uncertainty-aware models
-- notebook execution is still linked to the Sutskever substrate primarily through metadata and provenance, not full execution wrapping
 - the measured studies are still small-scale and should be expanded before making strong external claims
 
 These are appropriate next targets, not hidden problems.
@@ -498,12 +584,12 @@ These are appropriate next targets, not hidden problems.
 
 If you are extending this repository, the highest-value next additions are:
 
-1. full sweep orchestration over intervention grids
-2. explicit failure-atlas classifiers trained on exported artifacts
-3. visualization modules for onset surfaces and phase regions
-4. richer notebook wrapping for direct execution of substrate experiments
-5. stronger integration with the Sutskever-Agent workflow layer
-6. richer compressibility estimators using actual model weights from live runs
+1. replace the current centroid-based failure atlas with a stronger classifier that supports calibrated probabilities and richer failure taxonomies
+2. expand notebook execution from the current proven path to a broader, more resilient substrate execution matrix with checkpoint capture
+3. replace lightweight surface fitting with stronger uncertainty-aware statistical models
+4. broaden measured studies beyond tiny local regimes so the law statements cover more than narrow toy settings
+5. add interactive atlas exploration on top of the current static visualizations
+6. deepen agent integration so the exported workflow bundle can drive comparative reruns and narrative synthesis across multiple Layer 2 studies
 
 ## Development
 
@@ -521,20 +607,20 @@ python3 -m capability_cartography.demo
 
 ## Suggested GitHub Description
 
-If you are publishing this as `github.com/pageman/Capability-Cartography-Layer`, a strong short description would be:
+If you are publishing this as `github.com/pageman/Capability-Cartography-Layer-2`, a strong short description would be:
 
-> A standalone measurement framework for mapping capability formation, failure geometry, compressibility, retrieval dependence, and phase boundaries across the Sutskever research substrate and compact GPT-style wind tunnels.
+> A second-generation capability cartography framework for measured laws, failure atlases, notebook-backed substrate execution, visual phase mapping, and agent-linked capability research.
 
 ## Citation
 
 ```bibtex
-@misc{capability-cartography-layer-2026,
+@misc{capability-cartography-layer-2-2026,
   author    = {Paul "The Pageman" Pajo, pageman@gmail.com},
-  title     = {Capability-Cartography-Layer: a standalone empirical framework for mapping capability formation, failure geometry, compressibility, retrieval dependence, and phase boundaries},
+  title     = {Capability-Cartography-Layer-2: a second-generation empirical framework for predictive capability mapping, failure atlases, notebook-backed substrate execution, and agent-linked cartography},
   year      = {2026},
-  url       = {https://github.com/pageman/Capability-Cartography-Layer},
-  note      = {Research instrumentation layer designed to integrate pageman/sutskever-30-implementations,
-               pageman/Sutskever-Agent, and pageman/gpt1-from-sutskever30 into a unified capability-mapping workflow.}
+  url       = {https://github.com/pageman/Capability-Cartography-Layer-2},
+  note      = {Successor to Capability-Cartography-Layer, extending the cartography spine with failure-atlas exports,
+               notebook execution wrappers, static phase visualizations, agent workflow bundles, and richer measured-run instrumentation.}
 }
 ```
 
@@ -544,7 +630,7 @@ This repository is released under the MIT License. See [`LICENSE`](./LICENSE).
 
 ## Final Framing
 
-Capability Cartography Layer is meant to convert vague claims into map-like artifacts.
+Capability Cartography Layer 2 is meant to convert vague claims into map-like artifacts.
 
 Instead of:
 
